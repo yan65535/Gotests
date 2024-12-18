@@ -5,6 +5,9 @@ import (
 	"sync"
 )
 
+//sync.WaitGroup：适用于等待多个 goroutine 处理完任务。
+//channel：适用于 goroutine 之间的通信，数据流动和协作。
+
 var wg sync.WaitGroup
 
 func pA() {
