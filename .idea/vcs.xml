@@ -2,5 +2,13 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.account" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.admin" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.content" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.content/edu.boat.utils" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.message" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.storage" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.storage/edu.boat.proto" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../cc/edu.boat.storage/edu.boat.utils" vcs="Git" />
   </component>
 </project>
