@@ -3,72 +3,107 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"math/rand"
+	"net/http"
 	"os"
-	"strconv"
+	"strings"
+	"sync"
+	"time"
 )
 
-type Link struct {
-	Id      int
-	Title   string
-	WebLink string
-}
+var wg sync.WaitGroup
+var mutex sync.Mutex
 
 func main() {
-	// 创建一个 tutorials.csv 文件
-	csvFile, err := os.Create("tutorials.csv")
+	now := time.Now()
+	defer func() {
+		fmt.Printf("程序耗时： %v\n", time.Since(now))
+	}()
+
+	data := mustFile(os.Open("data.csv"))
+	defer data.Close()
+	dataT := csv.NewReader(data)
+	records, err := dataT.ReadAll()
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(os.Getwd())
-	defer csvFile.Close()
-	// 设置随机数种子
-	// 设置随机种子
 
-	tutorials := []Link{}
-	// 初始化字典数据
-	for i := 0; i < 3000; i++ {
-		//rand.Seed(time.Now().UnixNano())
+	// os.Create 默认会覆盖原文件；如果不存在就会新建
+	goodFile := mustFile(os.Create("good.csv"))
+	defer goodFile.Close()
 
-		// 生成 [9999, 10000] 范围的随机整数
-		min_, max_ := 100000, 999999
-		randomNum := rand.Intn(max_-min_+1) + min_
-		T := strconv.Itoa(randomNum)
-		if i%7 == 0 {
-			T = "baidu.com"
+	badFile := mustFile(os.Create("bad.csv"))
+	defer badFile.Close()
+
+	badCsv := csv.NewWriter(badFile)
+	defer badCsv.Flush() // 从缓存中刷新到badFile。
+
+	goodCsv := csv.NewWriter(goodFile)
+	defer goodCsv.Flush()
+
+	goodCsv.Write(records[0])
+	badCsv.Write(records[0])
+
+	fmt.Println("总记录数:", len(records))
+
+	for i, record := range records {
+		if i == 0 {
+			continue // 跳过表头
 		}
-		tutorials = append(tutorials, Link{
-			Id:      i + 1,
-			Title:   "tt" + strconv.Itoa(i),
-			WebLink: "http://" + T,
-		})
 
+		wg.Add(1)
+		go func(record []string) {
+			defer wg.Done()
+			if checkUrl(record[4]) {
+				addGood(record, goodCsv)
+			} else {
+				addBad(record, badCsv)
+			}
+		}(record)
 	}
 
-	// 初始化一个 csv writer，并通过这个 writer 写入数据到 csv 文件
-	csvFile.WriteString("\xEF\xBB\xBF")
+	wg.Wait() // 等待所有协程完成
+}
 
-	writer := csv.NewWriter(csvFile)
-	for _, tutorial := range tutorials {
-		line := []string{
-			strconv.Itoa(tutorial.Id), // 将 int 类型数据转化为字符串
-			tutorial.Title,
-			tutorial.WebLink,
-		}
-		// 将切片类型行数据写入 csv 文件
-		err := writer.Write(line)
-		if err != nil {
-			panic(err)
-		}
-	}
-	// 将 writer 缓冲中的数据都推送到 csv 文件，至此就完成了数据写入到 csv 文件
-	writer.Flush()
-
-	// 打开这个 csv 文件
-	file, err := os.Open("tutorials.csv")
+func mustFile(file *os.File, err error) *os.File {
 	if err != nil {
 		panic(err)
 	}
-	defer file.Close()
+	return file
+}
 
+func checkUrl(url string) bool {
+	url = strings.TrimSpace(url)
+	client := &http.Client{
+		Timeout: 20 * time.Second,
+	}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		fmt.Printf("创建请求错误: %s, 错误信息: %v\n", url, err)
+		return false
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Printf("请求错误: %s, 错误信息: %v\n", url, err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	return resp.StatusCode >= 200 && resp.StatusCode < 400
+}
+
+func addGood(record []string, goodW *csv.Writer) {
+	mutex.Lock()
+	goodW.Write(record)
+	defer mutex.Unlock()
+	fmt.Println("有效链接:", record)
+
+}
+
+func addBad(record []string, badW *csv.Writer) {
+	mutex.Lock()
+	badW.Write(record)
+	defer mutex.Unlock()
+	fmt.Println("无效链接:", record)
 }
