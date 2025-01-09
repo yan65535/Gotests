@@ -13,6 +13,10 @@ import (
 var wg sync.WaitGroup
 var mutex sync.Mutex
 
+var client = &http.Client{
+	Timeout: 20 * time.Second, // Client为线程安全 直接全局定义，避免资源消耗
+}
+
 func main() {
 	now := time.Now()
 	defer func() {
@@ -73,9 +77,7 @@ func mustFile(file *os.File, err error) *os.File {
 
 func checkUrl(url string) bool {
 	url = strings.TrimSpace(url)
-	client := &http.Client{
-		Timeout: 20 * time.Second,
-	}
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Printf("创建请求错误: %s, 错误信息: %v\n", url, err)
