@@ -24,7 +24,7 @@ var client = &http.Client{
 	Timeout: time.Second * 10,
 }
 
-var wg sync.WaitGroup
+//var wg sync.WaitGroup
 
 func main() {
 	now := time.Now()
@@ -53,14 +53,24 @@ func main() {
 	taskChan := make(chan Task)
 	resultChan := make(chan Result)
 	workerCount := 1000
-
+	var wg sync.WaitGroup
 	for i := 0; i < workerCount; i++ {
 		wg.Add(1)
-		go worker(taskChan, resultChan)
+		go worker(taskChan, resultChan, &wg)
 	}
 	var resultWg sync.WaitGroup
 	resultWg.Add(1)
-
+	go process(resultChan, goodCsv, badCsv, &resultWg)
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		taskChan <- Task{Record: record, Index: i}
+	}
+	close(taskChan)
+	wg.Wait()
+	close(resultChan)
+	resultWg.Wait()
 }
 func mustFile(file *os.File, err error) *os.File {
 	if err != nil {
@@ -69,11 +79,25 @@ func mustFile(file *os.File, err error) *os.File {
 	return file
 }
 
-func worker(ch <-chan Task, result chan<- Result) {
+func worker(TaskCh <-chan Task, result chan<- Result, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for task := range TaskCh {
+		isGood := checkURL(task.Record[4])
+		result <- Result{Record: task.Record, IsGood: isGood}
+	}
 
 }
-func process() {
-
+func process(resultCh <-chan Result, goodCsv *csv.Writer, badCsv *csv.Writer, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for result := range resultCh {
+		if result.IsGood {
+			goodCsv.Write(result.Record)
+			fmt.Println("有效链接:", result.Record)
+		} else {
+			badCsv.Write(result.Record)
+			fmt.Println("无效连接:", result.Record)
+		}
+	}
 }
 func checkURL(url string) bool {
 	url = strings.TrimSpace(url)                 //去除url中多余空格
