@@ -49,10 +49,10 @@ func main() {
 
 	fmt.Println("总记录数:", len(records))
 
-	for i, record := range records {
-		if i == 0 {
-			continue // 跳过表头
-		}
+	for _, record := range records[1:] {
+		//if i == 0 {
+		//	continue // 跳过表头
+		//}
 
 		wg.Add(1)
 		go func(record []string) {

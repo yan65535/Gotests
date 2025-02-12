@@ -8,7 +8,7 @@ import (
 func main() {
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "127.0.0.1", nil)
+	req, _ := http.NewRequest("GET", "127.0.0.1:8080", nil)
 	res, _ := client.Do(req)
 	if res.StatusCode != 200 {
 		fmt.Println("error")

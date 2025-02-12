@@ -25,10 +25,12 @@ func main() {
 	Done := make(chan bool, 2)
 	go func() {
 		fmt.Println("A")
+		pA()
 		Done <- true
 	}()
 	go func() {
 		fmt.Println("B")
+		pB()
 		Done <- true
 	}()
 	<-Done //阻塞 等待接信号
