@@ -8,7 +8,6 @@ type Result struct {
 	task   Task
 	result int
 }
-var ta
 
 func getResult() {
 
