@@ -1,5 +1,15 @@
 package main
 
+type Task struct {
+	id      int
+	randNum int
+}
+type Result struct {
+	task   Task
+	result int
+}
+var ta
+
 func getResult() {
 
 }
