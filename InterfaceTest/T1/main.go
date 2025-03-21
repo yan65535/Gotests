@@ -10,6 +10,7 @@ type aTeacher struct { //定义a教师
 	aFunc string
 }
 type bTeacher struct { //定义b教师
+	bName string
 	bFunc string
 }
 type tStruct struct { //定义教师
@@ -36,6 +37,9 @@ func (b bTeacher) speak() string {
 	b.Bbb()
 	return b.bFunc + "speakB"
 }
+func (b *bTeacher) bRename(newName string) {
+	b.bName = newName
+}
 func (b bTeacher) codeReview() string {
 	return b.bFunc + "codeReviewB"
 }
@@ -55,6 +59,14 @@ func main() {
 	fmt.Println(t.teacher.speak())      // b教师授课
 	fmt.Println(t.teacher.codeReview()) //b教师检查代码
 	t.Build()                           //课程结束
+
+	b := bTeacher{
+		bName: "老李",
+	}
+
+	fmt.Println(b.bName)
+	b.bRename("haihaihai")
+	fmt.Println(b.bName)
 }
 
 //上面例子中，可以观察到接口的实现是隐式的，也对应了官方对于基本接口实现的定义：
