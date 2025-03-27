@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 // 定义一个结构体 Counter
@@ -18,6 +19,7 @@ func (c *Counter) Increment() {
 
 // 使用原子操作获取当前计数
 func (c *Counter) Get() int32 {
+	time.Sleep(3 * time.Second)
 	return atomic.LoadInt32(&c.count)
 }
 
@@ -37,7 +39,7 @@ func main() {
 	}
 
 	wg.Wait()
-
+	fmt.Println("=-=-")
 	// 输出最终计数结果
 	fmt.Println("Final Counter:", counter.Get())
 }
