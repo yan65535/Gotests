@@ -180,9 +180,9 @@ func createRow(cells []fyne.CanvasObject) []fyne.CanvasObject {
 	for i := 0; i < 9; i++ {
 		// 在 createSudokuGrid 的单元格创建处添加
 		entry := widget.NewEntry()
-		entry.MultiLine = false     // 禁用多行显示
-		entry.SetMinRowsVisible(1)  // 减少最小行数
-		entry.SetMinCharsVisible(1) // 减少最小字符宽度
+		entry.MultiLine = false    // 禁用多行显示
+		entry.SetMinRowsVisible(1) // 减少最小行数
+		//entry.SetMinCharsVisible(1) // 减少最小字符宽度
 
 		// 在 createRow 函数中调整单元格间距
 		cell := container.NewPadded(cells[i])
