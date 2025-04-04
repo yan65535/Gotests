@@ -16,7 +16,7 @@ func main() {
 	defer cancel()
 
 	// 使用 DialContext 连接到 gRPC 服务器
-	conn, err := grpc.DialContext(ctx, "localhost:50052", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.DialContext(ctx, "localhost:50053", grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}
@@ -26,7 +26,7 @@ func main() {
 	client := pb.NewLatexServiceClient(conn)
 
 	// 读取图片文件
-	imageData, err := ioutil.ReadFile("img/img.png")
+	imageData, err := ioutil.ReadFile("img/img_1.png")
 	if err != nil {
 		log.Fatalf("Failed to read image file: %v", err)
 	}
