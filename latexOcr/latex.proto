@@ -1,0 +1,19 @@
+syntax = "proto3";
+option go_package = "proto/latexOcr";
+package latexOcr;
+
+// 请求消息，包含要识别的图片数据
+message LatexRequest {
+  bytes image_data = 1; // 修改为 bytes 类型来存储图片数据
+}
+
+// 响应消息，包含识别结果
+message LatexResponse {
+  string result = 1;
+}
+
+// 定义服务
+service LatexService {
+  // 定义一个方法，用于LaTeX图片识别
+  rpc RecognizeLatex(LatexRequest) returns (LatexResponse);
+}
