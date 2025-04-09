@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"github.com/samuel/go-zookeeper/zk"
 	"io/ioutil"
 	"log"
 	"time"
@@ -12,11 +14,41 @@ import (
 
 func main() {
 	// 创建一个带有超时的上下文
+	zkConn, _, err := zk.Connect([]string{"localhost:2181"}, 5*time.Second)
+	if err != nil {
+		log.Fatalf("Failed to connect to ZooKeeper: %v", err)
+	}
+	defer zkConn.Close()
+	pythonServiceAddr := ""
+	// 获取Python服务的节点信息
+	pythonServicePath := "/services/latex_ocr"
+	children, _, err := zkConn.Children(pythonServicePath)
+	if err != nil {
+		log.Fatalf("Failed to get Python service nodes: %v", err)
+	}
+	if len(children) > 0 {
+		nodePath := pythonServicePath + "/" + children[0]
+		data, _, err := zkConn.Get(nodePath)
+		if err != nil {
+			log.Fatalf("Failed to get node data: %v", err)
+		}
+		pythonServiceAddr = string(data)
+		fmt.Println(pythonServiceAddr)
+		log.Printf("Found Python service at: %s", pythonServiceAddr)
+
+		// 这里可以使用pythonServiceAddr来连接到Python服务
+		// 例如：使用grpc.Dial来连接到Python服务
+		//pythonConn, err := grpc.Dial(pythonServiceAddr, grpc.WithInsecure())
+		//if err != nil {
+		//    log.Fatalf("Failed to connect to Python service: %v", err)
+		//}
+		//defer pythonConn.Close()
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	// 使用 DialContext 连接到 gRPC 服务器
-	conn, err := grpc.DialContext(ctx, "localhost:50053", grpc.WithInsecure(), grpc.WithBlock())
+	conn, err := grpc.DialContext(ctx, pythonServiceAddr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("Failed to connect: %v", err)
 	}

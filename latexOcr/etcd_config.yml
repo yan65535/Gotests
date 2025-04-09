@@ -1,0 +1,4 @@
+etcd:
+  endpoints:
+    - "localhost:2379"  # etcd 服务的地址
+  timeout: 5  # 连接超时时间（秒）

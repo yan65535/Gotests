@@ -5,6 +5,7 @@ import latex_pb2_grpc
 import io
 from PIL import Image
 from pix2tex.cli import LatexOCR
+from kazoo.client import KazooClient
 #protobuf==5.29.0
 class LatexService(latex_pb2_grpc.LatexServiceServicer):
     def __init__(self):
@@ -28,11 +29,28 @@ class LatexService(latex_pb2_grpc.LatexServiceServicer):
             return latex_pb2.LatexResponse(result="")
 
 def serve():
+    zk = KazooClient(hosts='127.0.0.1:2181')  # 请根据实际情况修改 ZooKeeper 地址
+    zk.start()
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     latex_pb2_grpc.add_LatexServiceServicer_to_server(LatexService(), server)
     server.add_insecure_port('[::]:50053')
     server.start()
     print("Server started, listening on port 50053")
+
+    # 注册服务到 ZooKeeper
+    service_path = '/services/latex_ocr'
+    port = '[::]:50053'
+    if not zk.exists(service_path):
+        zk.create(service_path, makepath=True)
+    zk.create(f'{service_path}/node', value=port.encode(), ephemeral=True, sequence=True)
+
+    try:
+        server.wait_for_termination()
+    except KeyboardInterrupt:
+        server.stop(0)
+        zk.stop()
+
+
     server.wait_for_termination()
 
 if __name__ == '__main__':
