@@ -23,8 +23,14 @@ func main() {
 func initConfig() config.Conf {
 	conf, err := config.Init()
 	handleErr(err)
-	config.RegisterUpdateFunc(config.GetUpdateLogLevelFun())
+
 	return conf
+}
+
+func handleErr(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
 func initGrpcServer(conf config.Conf, adaptor adaptor.Adaptors) *zrpc.RpcServer {
 	rpcConf := zrpc.RpcServerConf{
