@@ -30,6 +30,11 @@ type Conf struct {
 		RpcConf RpcConf `yaml:"rpc_conf"`
 	} `yaml:"server"`
 	// 可以添加更多配置项
+	Zookeeper struct {
+		ServicePath string   `yaml:"service_path"`
+		Hosts       []string `yaml:"host"`
+		Timeout     int      `yaml:"timeout"`
+	}
 }
 
 type RpcConf struct {
