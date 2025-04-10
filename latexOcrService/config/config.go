@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	ServerName     = "latexOcr"
+	ServerName     = "basic"
 	ServerFullName = "latexOcrService"
 )
 
@@ -19,15 +19,15 @@ var (
 	etcdAddr        string
 	etcdHosts       []string
 	localConfigPath string
+	zookeeperHost   string
 )
 
 // 定义配置结构体
 type Conf struct {
 	Port   string `yaml:"port"`
 	Server struct {
-		Env       string    `yaml:"env"`
-		RpcConf   RpcConf   `yaml:"rpc_conf"`
-		RedisConf RedisConf `yaml:"redis_conf"`
+		Env     string  `yaml:"env"`
+		RpcConf RpcConf `yaml:"rpc_conf"`
 	} `yaml:"server"`
 	// 可以添加更多配置项
 }
@@ -47,6 +47,7 @@ type RedisConf struct {
 func init() {
 	flag.StringVar(&localConfigPath, "c", ServerName+"_local.yml", "default config path")
 	flag.StringVar(&etcdAddr, "r", os.Getenv("ETCD_HOSTS"), "default etcd address")
+	flag.StringVar(&zookeeperHost, "z", os.Getenv("ZOOKEEPER_HOSTS"), "default zookeeper address")
 	flag.Parse()
 }
 
@@ -60,6 +61,7 @@ func Init() (conf Conf, err error) {
 	} else {
 		conf, err = getFromLocal()
 	}
+
 	fmt.Printf("static config => [%#v]\n", conf)
 	return
 }

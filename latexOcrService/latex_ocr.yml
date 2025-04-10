@@ -3,9 +3,14 @@ server:
   http_port: 8114
   full_pprof: false
   rpc_conf:
-    name: latexOcr.rpc
+    name: basic.rpc
     listen_on: 0.0.0.0:8081
     etcd_key: message.rpc
     etcd_hosts:
       - 127.0.0.1:2379
     zookeeper_hosts:
+      - 127.0.0.1:2181
+    consul_host: 127.0.0.1
+    consul_port: 50053
+    consul_path: /services/latex_ocr/node
+

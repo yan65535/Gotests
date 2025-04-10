@@ -1,9 +1,13 @@
 package config
 
 import (
+	"context"
+	"errors"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
+	"log"
 	"time"
 )
 
@@ -33,9 +37,7 @@ func (cc *etcdClient) fetchData() (kvData *mvccpb.KeyValue, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
 	resp, err := cc.client.Get(ctx, cc.configKey)
 	cancel()
-	if err != nil {
-		trace.GlobalLogger.For(context.TODO()).Error("fetchData get config failed", zap.Error(err))
-	}
+
 	if resp.Count == 0 {
 		err = errors.New("etcd client is empty")
 		return nil, err
@@ -45,13 +47,9 @@ func (cc *etcdClient) fetchData() (kvData *mvccpb.KeyValue, err error) {
 func (cc *etcdClient) GetRemoteConfig() (conf Conf, err error) {
 	data, err := cc.fetchData()
 	if err != nil {
-		trace.GlobalLogger.For(context.TODO()).Error("GetRemoteConfig fetchData config failed", zap.Error(err))
-		return conf, err
+		log.Println(err)
 	}
-	if data == nil {
-		trace.GlobalLogger.For(context.TODO()).Error("GetRemoteConfig fetchData data is nil")
-		return conf, errors.New("got data is nil")
-	}
+
 	if data.Version < cc.lastVersion {
 		return cc.lastConf, nil
 	}
@@ -65,7 +63,7 @@ func (cc *etcdClient) updateConf(conf Conf) {
 
 func (cc *etcdClient) decodeConf(data []byte) (conf Conf, err error) {
 	if err = yaml.Unmarshal(data, &conf); err != nil {
-		trace.GlobalLogger.For(context.TODO()).Error("watchSystemConfig failed", zap.Error(err), zap.String("val", string(data)))
+		log.Println(err)
 	}
 	return conf, err
 }
@@ -77,7 +75,7 @@ func (cc *etcdClient) WatchConfig() {
 		for w := range watchChan {
 			err = w.Err()
 			if err != nil {
-				trace.GlobalLogger.For(context.TODO()).Error("WatchConfig failed", zap.Error(err), zap.String("configKey", cc.configKey))
+				log.Println(err)
 			}
 			for _, event := range w.Events {
 				if string(event.Kv.Key) == cc.configKey {
@@ -96,16 +94,9 @@ func (cc *etcdClient) handleUpdateConfig(kvData *mvccpb.KeyValue) {
 	}
 	conf, err := cc.decodeConf(kvData.Value)
 	if err != nil {
-		trace.GlobalLogger.For(context.TODO()).Error("watchSystemConfig failed", zap.Error(err), zap.String("val", string(kvData.Value)))
+		zap.L().Error("decode conf failed", zap.Error(err))
 		return
-	}
-	for _, update := range updateFuncs {
-		update(cc.lastConf, conf)
 	}
 
 	cc.updateConf(conf)
-}
-
-func RegisterUpdateFunc(updateFunc ...UpdateConfFunc) {
-	updateFuncs = updateFunc
 }

@@ -17,6 +17,7 @@ import (
 //trace "e.coding.net/g-mneg1542/block/block.utils/utrace/tutil"
 
 func main() {
+	conf := initConfig()
 
 }
 
@@ -32,6 +33,7 @@ func handleErr(err error) {
 		panic(err)
 	}
 }
+
 func initGrpcServer(conf config.Conf, adaptor adaptor.Adaptors) *zrpc.RpcServer {
 	rpcConf := zrpc.RpcServerConf{
 		ServiceConf: service.ServiceConf{
@@ -59,3 +61,9 @@ func initGrpcServer(conf config.Conf, adaptor adaptor.Adaptors) *zrpc.RpcServer 
 		}
 	})
 }
+
+//func initApp(conf config.Conf, router *route.Router) *uweb.App {
+//
+//	app := uweb.NewApp(conf.Server.HttpPort, "", tracer, router)
+//	return app
+//}

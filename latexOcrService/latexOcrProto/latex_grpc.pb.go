@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LatexService_RecognizeLatex_FullMethodName = "/latexOcr.LatexService/RecognizeLatex"
+	LatexService_RecognizeLatex_FullMethodName = "/basic.LatexService/RecognizeLatex"
 )
 
 // LatexServiceClient is the client API for LatexService service.
@@ -114,7 +114,7 @@ func _LatexService_RecognizeLatex_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var LatexService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "latexOcr.LatexService",
+	ServiceName: "basic.LatexService",
 	HandlerType: (*LatexServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -1,6 +1,9 @@
 package repo
 
-import "context"
+import (
+	"context"
+	"latexOcrService/service/do"
+)
 
 type ILatex interface {
 	// 添加文件上传记录

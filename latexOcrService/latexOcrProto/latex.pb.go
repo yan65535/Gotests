@@ -144,12 +144,12 @@ func file_latex_proto_rawDescGZIP() []byte {
 
 var file_latex_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_latex_proto_goTypes = []any{
-	(*LatexRequest)(nil),  // 0: latexOcr.LatexRequest
-	(*LatexResponse)(nil), // 1: latexOcr.LatexResponse
+	(*LatexRequest)(nil),  // 0: basic.LatexRequest
+	(*LatexResponse)(nil), // 1: basic.LatexResponse
 }
 var file_latex_proto_depIdxs = []int32{
-	0, // 0: latexOcr.LatexService.RecognizeLatex:input_type -> latexOcr.LatexRequest
-	1, // 1: latexOcr.LatexService.RecognizeLatex:output_type -> latexOcr.LatexResponse
+	0, // 0: basic.LatexService.RecognizeLatex:input_type -> basic.LatexRequest
+	1, // 1: basic.LatexService.RecognizeLatex:output_type -> basic.LatexResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
