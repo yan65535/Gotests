@@ -2,7 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/grpc-demo/grpc-go" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../cc/edu.boat.account" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../cc/edu.boat.admin" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/../cc/edu.boat.content" vcs="Git" />

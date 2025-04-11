@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// 配置MySQL数据库连接信息
-	dsn := "root:123456@tcp(127.0.0.1:3306)/edu.boat.account?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := "root:123456@tcp(127.0.0.1:3306)/edu.boat.accountss?charset=utf8mb4&parseTime=True&loc=Local"
 
 	// 连接MySQL数据库
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
