@@ -7,6 +7,7 @@ import (
 
 func sum[T int | float64](a, b T) T {
 	fmt.Println(reflect.TypeOf(a), reflect.TypeOf(b))
+	fmt.Println("hello")
 	return a + b
 
 }
