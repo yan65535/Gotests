@@ -1,0 +1,14 @@
+server:
+  http_port: 8116
+  rpc_conf:
+    name: latex.rpc
+    listen_on: 0.0.0.0:8074
+    etcd_key: latex.rpc
+    etcd_hosts:
+      - 127.0.0.1:2379
+
+
+  zk_client:
+    servers:
+      - 127.0.0.1:2181
+
